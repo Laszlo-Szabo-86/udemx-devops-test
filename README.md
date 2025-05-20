@@ -37,3 +37,27 @@ virsh pool-autostart debian
 
 ---
 ## 2. Virtuális gép installálása
+:electric_plug: Itt azt szeretném elérni, hogy virtuális gép közvetlenül csatlakozzon a *192.168.1.0/24* **alhálózatomhoz**, azaz:
+- a fizikai gép IP címe **192.168.1.20**,
+- a virtuális gépé **192.168.1.21** lenne.
+
+Ehhez egy szoftver **bridge**-et állítottam be a fizikai gépen és a **hálózati interfészét** (amin keresztül a hálózathoz csatlakozik) hozzácsatoltam (*enslave*) a *bridge*-hez. Később a virtuális gépet is a *bridge*-hez csatolom.
+(*A hálózaton működik egy BIND DNS szerver a 192.168.1.10 címen.*)
+```
+nmcli con add type bridge autoconnect yes con-name br0 ifname br0
+nmcli con modify br0 ipv4.method manual \
+  ipv4.addresses 192.168.1.20/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns 192.168.1.10 \
+  ipv6.method ignore
+nmcli con add type ethernet autoconnect yes con-name bridge-slave-enp0s31f6 \
+  ifname enp0s31f6 master br0
+nmcli con up bridge-slave-enp0s31f6 && nmcli con up br0 && nmcli con down enp0s31f6
+nmcli con delete enp0s31f6
+```
+
+:cd: Letöltöttem a **Debian 11.11** verziójú (LTS) **netinstall** ISO image-et.
+```
+cd /data/iso
+curl -LO https://cdimage.debian.org/cdimage/archive/11.11.0/amd64/iso-cd/debian-11.11.0-amd64-netinst.iso
+```
