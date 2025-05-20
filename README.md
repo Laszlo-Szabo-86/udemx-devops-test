@@ -21,9 +21,19 @@ nvme0n1     259:0    0 238.5G  0 disk
 ```
 A 4-es partíción külön **volume group**-ot (*data*) és **logical volume**-ot (*vm*) alakítottam ki, ahol a virtuális géphez köthető image-(ek)et tárolom, ami a */data/vm* elérési útra csatolódik fel.
 
-A **KVM** virtualizációhoz szükséges csomagokat **telepítettem**.
+A **KVM** virtualizációhoz szükséges csomagokat **telepítettem**, a **libvirtd** szervizt engedélyeztem és elindítottam.
 ```
 dnf install qemu-kvm libvirt virt-install virt-top bridge-utils
+systemctl enable --now libvirtd.service
+```
+A fentiekhez kapcsolódva létrehoztam a perzisztens **Libvirt storage pool**-t (*debian*) **auto-start** opcióval a */data/vm* csatolási pontra.
+```
+virsh pool-define-as --name debian --type dir --target /data/vm
+virsh pool-start debian
+virsh pool-autostart debian
 ```
 
-:vertical_traffic_light: Verziókövetéshez egy másik alhálózatba kapcsolt mini PC-n futó **GitLab**-on létrehoztam egy külön csoportot (*udemx*) és projektet (*devops-test*), ami SSH-alapú **repository mirroring** segítségével minden *push* esetén továbbítja a tartalmat ebbe a **GitHub** repository-ba (*udemx-devops-test*). 
+:vertical_traffic_light: **Verziókövetéshez**, egy másik alhálózatba kapcsolt mini PC-n futó **GitLab**-on, létrehoztam egy külön csoportot (*udemx*) és projektet (*devops-test*), ami SSH-alapú **repository mirroring** segítségével minden *push* esetén továbbítja a tartalmat a jelen **GitHub** *repository*-ba (*udemx-devops-test*).
+
+---
+## 2. Virtuális gép installálása
