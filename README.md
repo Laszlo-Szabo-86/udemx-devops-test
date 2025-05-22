@@ -35,11 +35,9 @@ virsh pool-autostart debian
 
 :vertical_traffic_light: **Verziókövetéshez**, egy másik alhálózatba kapcsolt mini PC-n futó **GitLab**-on, létrehoztam egy külön csoportot (*udemx*) és projektet (*devops-test*), ami SSH-alapú **repository mirroring** segítségével minden *push* esetén továbbítja a tartalmat a jelen **GitHub** *repository*-ba (*udemx-devops-test*).
 
----
-## 2. Virtuális gép installálása
-:electric_plug: Itt azt szeretném elérni, hogy virtuális gép közvetlenül csatlakozzon a *192.168.1.0/24* **alhálózatomhoz**, azaz:
+:electric_plug: A **hálózati konfigurációban** azt szeretném elérni, hogy a virtuális gép közvetlenül csatlakozzon a *192.168.1.0/24* **alhálózatomhoz**, azaz:
 - a fizikai gép IP címe **192.168.1.20**,
-- a virtuális gépé **192.168.1.21** lenne.
+- a virtuális gépé **192.168.1.21** legyen.
 
 Ehhez egy szoftver **bridge**-et állítottam be a fizikai gépen és a **hálózati interfészét** (amin keresztül a hálózathoz csatlakozik) hozzácsatoltam (*enslave*) a *bridge*-hez. Később a virtuális gépet is a *bridge*-hez csatolom.
 (*A hálózaton működik egy BIND DNS szerver a 192.168.1.10 címen.*)
@@ -55,9 +53,36 @@ nmcli con add type ethernet autoconnect yes con-name bridge-slave-enp0s31f6 \
 nmcli con up bridge-slave-enp0s31f6 && nmcli con up br0 && nmcli con down enp0s31f6
 nmcli con delete enp0s31f6
 ```
+---
+## 2. Virtuális gép installálása
 
-:cd: Letöltöttem a **Debian 11.11** verziójú (LTS) **netinstall** ISO image-et.
+A telepítés első lépésében elkészítettem a **preseed** konfigurációt a **netboot install**-hoz.
+A [./vm/preseed.cfg :page_facing_up:](./vm/preseed.cfg) fájlt elérhetővé teszem a *8000*-es porton a *netboot install* számára, amit az alábbi **virsh install** paranccsal futtatok.
 ```
-cd /data/iso
-curl -LO https://cdimage.debian.org/cdimage/archive/11.11.0/amd64/iso-cd/debian-11.11.0-amd64-netinst.iso
+cd /data/vm/preseed
+python3 -m http.server 8000
+```
+```
+virt-install \
+  --name udemx-debian \
+  --ram 4096 \
+  --vcpus 4 \
+  --disk pool=debian,size=64,format=qcow2 \
+  --os-variant debian11 \
+  --location 'http://deb.debian.org/debian/dists/bullseye/main/installer-amd64/' \
+  --extra-args 'auto=true priority=critical preseed/url=http://192.168.1.20:8000/udemx-debian.cfg console=ttyS0,115200n8' \
+  --network bridge=br0,model=virtio \
+  --graphics none \
+  --console pty,target_type=serial \
+  --boot useserial=on
+```
+
+> [!note]
+> Hasznos linkek a preseed konfigurációhoz:
+> - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
+> - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
+
+Az installálás után **autostart**-ra jelölöm a virtuális gépet.
+```
+virsh autostart udemx-debian
 ```
