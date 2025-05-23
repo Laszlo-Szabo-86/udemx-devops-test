@@ -1,0 +1,45 @@
+- name: Install OpenJDK 8 manually alongside OpenJDK 11
+  hosts: all
+  become: true
+  vars:
+    java8_install_dir: /opt/java
+    java8_folder: jdk8u452-b09
+    java8_url: "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u452-b09/OpenJDK8U-jdk_x64_linux_hotspot_8u452b09.tar.gz"
+    java8_priority: 1080
+    java8_path: "{{ java8_install_dir }}/{{ java8_folder }}"
+
+  tasks:
+
+    - name: Ensure Java base directory exists
+      file:
+        path: "{{ java8_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download and extract OpenJDK 8 to /opt/java
+      unarchive:
+        src: "{{ java8_url }}"
+        dest: "{{ java8_path }}"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Register OpenJDK 8 binaries with update-alternatives
+      block:
+        - name: Register java
+          alternatives:
+            name: java
+            link: /usr/bin/java
+            path: "{{ java8_path }}/bin/java"
+            priority: "{{ java8_priority }}"
+
+        - name: Register javac
+          alternatives:
+            name: javac
+            link: /usr/bin/javac
+            path: "{{ java8_path }}/bin/javac"
+            priority: "{{ java8_priority }}"
+
+    - name: Set OpenJDK 8 as default
+      shell: |
+        update-alternatives --set java {{ java8_path }}/bin/java
+        update-alternatives --set javac {{ java8_path }}/bin/javac

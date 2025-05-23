@@ -1,0 +1,39 @@
+- name: Setup required packages
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars:
+    packages:
+      - sudo
+      - mc
+      - htop
+      - openjdk-11-jdk
+      - fail2ban
+
+  tasks:
+    - name: Run apt-get update
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Set lists of packages (before installation)
+      ansible.builtin.set_fact:
+        installed_packages: "{{ packages | select('in', ansible_facts.packages.keys()) | list }}"
+        not_installed_packages: "{{ packages | reject('in', ansible_facts.packages.keys()) | list }}"
+
+    - name: Show installed packages (before installation)
+      ansible.builtin.debug:
+        var: installed_packages
+
+    - name: Show not installed packages (before installation)
+      ansible.builtin.debug:
+        var: not_installed_packages
+
+    - name: Install required packages
+      ansible.builtin.package:
+        name: "{{ not_installed_packages }}"
+        state: present
