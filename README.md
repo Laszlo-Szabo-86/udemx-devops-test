@@ -79,12 +79,13 @@ virt-install \
 ```
 
 > [!note]
+> A **preseed** konfigurációban a következő dolgokat állítottam be:
+> - **Statikus IP cím** (*192.168.1.21*) a virtuális szervernek
+> - az **/opt** és **/tmp** könyvtárak részére külön partíció
+>
 > Hasznos linkek a preseed konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
 > - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
-
-> [!note]
-> A preseed-ben a következő dolgokat állítottam be:
 
 Az installálás után **autostart**-ra jelölöm a virtuális gépet.
 ```
