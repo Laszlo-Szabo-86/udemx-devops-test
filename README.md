@@ -26,7 +26,7 @@ A **KVM** virtualizációhoz szükséges csomagokat **telepítettem**, a **libvi
 dnf install qemu-kvm libvirt virt-install virt-top bridge-utils
 systemctl enable --now libvirtd.service
 ```
-A fentiekhez kapcsolódva létrehoztam a perzisztens **Libvirt storage pool**-t (*debian*) **auto-start** opcióval a */data/vm* csatolási pontra.
+A fentiekhez kapcsolódva létrehoztam a perzisztens **Libvirt storage pool**-t (*debian*) **autostart** opcióval a */data/vm* csatolási pontra.
 ```
 virsh pool-define-as --name debian --type dir --target /data/vm
 virsh pool-start debian
@@ -77,8 +77,7 @@ virt-install \
   --boot useserial=on
 ```
 
-> [!note]
-> Hasznos linkek a preseed konfigurációhoz:
+> [!note] Hasznos linkek a preseed konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
 > - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
 
