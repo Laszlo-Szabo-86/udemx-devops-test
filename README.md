@@ -77,7 +77,7 @@ virt-install \
   --boot useserial=on
 ```
 
-> [!note] Hasznos linkek a preseed konfigurációhoz:
+> [!note] Hasznos linkek a preseed konfigurációhoz
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
 > - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
 
