@@ -57,7 +57,7 @@ nmcli con delete enp0s31f6
 ## 2. Virtuális gép installálása
 
 A telepítés első lépésében elkészítettem a **preseed** konfigurációt a **netboot install**-hoz.
-A [./vm/preseed.cfg :page_facing_up:](./vm/preseed.cfg) fájlt elérhetővé teszem a *8000*-es porton a *netboot install* számára, amit az alábbi **virsh install** paranccsal futtatok.
+A [:page_facing_up: ./vm/preseed.cfg](./vm/preseed.cfg) fájlt elérhetővé teszem a *8000*-es porton a *netboot install* számára, amit az alábbi **virsh install** paranccsal futtatok.
 ```
 cd /data/vm/preseed
 python3 -m http.server 8000
@@ -82,9 +82,9 @@ virt-install \
 > A **preseed** konfigurációban a következő dolgokat állítottam be:
 > - **Statikus IP cím** (*192.168.1.21*) a virtuális szervernek
 > - az **/opt** és **/tmp** könyvtárak részére külön partíció
-> - az **SSH port**ját *2222*-re állítottam az alapértelmezett *22*-es port helyett.
-> - installáltam az **Ansible**-t
-> - ideiglenesen engedélyeztem a **root** felhasználó jelszavas SSH bejelentkezését
+> - az **SSH** az alapértelmezett (*22*) **port** helyett a *2222* porton hallgatózik
+> - **Ansible** telepítve
+> - a **root** felhasználó jelszavas SSH bejelentkezése **ideiglenesen** engedélyezve
 >
 > Hasznos linkek a konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
@@ -94,3 +94,7 @@ Az installálás után **autostart**-ra jelölöm a virtuális gépet.
 ```
 virsh autostart udemx-debian
 ```
+
+*A hálózatom BIND DNS szerverének A és PTR rekordjaiba felvettem a **udemx-debian.lan** host-ot, a beállításokat az alábbi fájlok tartalmazzák:*
+- [:page_facing_up: ./named/192.168.1.rev](./named/192.168.1.rev)
+- [:page_facing_up: ./named/lan.zone](./named/lan.zone)

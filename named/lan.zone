@@ -1,0 +1,17 @@
+$TTL 86400
+@       IN      SOA vostok.lan. root.vostok.lan. (
+                2025051201      ; Serial
+                3600            ; Refresh
+                1800            ; Retry
+                604800          ; Expire
+                86400 )         ; Minimum TTL
+
+        IN      NS      vostok.lan.
+
+vostok          IN      A       192.168.1.10
+sputnik         IN      A       192.168.1.20
+udemx-debian    IN      A       192.168.1.21
+desktop         IN      A       192.168.1.30
+*.vostok        IN      A       192.168.1.10
+*.sputnik       IN      A       192.168.1.20
+*.udemx-debian  IN      A       192.168.1.21
