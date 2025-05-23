@@ -62,6 +62,7 @@ A [./vm/preseed.cfg :page_facing_up:](./vm/preseed.cfg) fájlt elérhetővé tes
 cd /data/vm/preseed
 python3 -m http.server 8000
 ```
+
 ```
 virt-install \
   --name udemx-debian \
@@ -81,6 +82,9 @@ virt-install \
 > Hasznos linkek a preseed konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
 > - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
+
+> [!tip] Info
+> A preseed-ben a következő dolgokat állítottam be:
 
 Az installálás után **autostart**-ra jelölöm a virtuális gépet.
 ```
