@@ -83,7 +83,7 @@ virt-install \
 > - **Statikus IP cím** (*192.168.1.21*) a virtuális szervernek
 > - az **/opt** és **/tmp** könyvtárak részére külön partíció
 >
-> Hasznos linkek a preseed konfigurációhoz:
+> Hasznos linkek a konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
 > - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
 
