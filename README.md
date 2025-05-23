@@ -82,6 +82,9 @@ virt-install \
 > A **preseed** konfigurációban a következő dolgokat állítottam be:
 > - **Statikus IP cím** (*192.168.1.21*) a virtuális szervernek
 > - az **/opt** és **/tmp** könyvtárak részére külön partíció
+> - az **SSH port**ját *2222*-re állítottam az alapértelmezett *22*-es port helyett.
+> - installáltam az **Ansible**-t
+> - ideiglenesen engedélyeztem a **root** felhasználó jelszavas SSH bejelentkezését
 >
 > Hasznos linkek a konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
