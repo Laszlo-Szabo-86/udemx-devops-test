@@ -83,7 +83,7 @@ virt-install \
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
 > - [partman-auto recipe description](https://github.com/xobs/debian-installer/blob/master/doc/devel/partman-auto-recipe.txt)
 
-> [!tip] Info
+> [!note]
 > A preseed-ben a következő dolgokat állítottam be:
 
 Az installálás után **autostart**-ra jelölöm a virtuális gépet.
