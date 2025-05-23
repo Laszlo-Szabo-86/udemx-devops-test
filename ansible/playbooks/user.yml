@@ -1,0 +1,14 @@
+- name: Create udemx user
+  hosts: all
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Create user udemx
+      ansible.builtin.user:
+        name: udemx
+        # Pre-hashed with: python3 -c 'import crypt; print(crypt.crypt("Alma1234", crypt.mksalt(crypt.METHOD_SHA512)))'
+        password: "$6$DUI91Eeiv8lhk.fQ$KOmvPXKy22QYu6WzS1eel6Fg7TEcVlBWSORZeVFNZi7RklMO6sC9oePsySNQvwDQksXaRYsrF4ywby00k9LvG/"
+        groups: sudo
+        append: true
+        home: /opt/udemx

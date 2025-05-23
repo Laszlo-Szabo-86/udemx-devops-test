@@ -57,7 +57,7 @@ nmcli con delete enp0s31f6
 ## 2. Virtuális gép installálása
 
 A telepítés első lépésében elkészítettem a **preseed** konfigurációt a **netboot install**-hoz.
-A [:page_facing_up: ./vm/preseed.cfg](./vm/preseed.cfg) fájlt elérhetővé teszem a *8000*-es porton a *netboot install* számára, amit az alábbi **virsh install** paranccsal futtatok.
+A [:page_facing_up: preseed.cfg](./vm/preseed.cfg) fájlt elérhetővé teszem a *8000*-es porton a *netboot install* számára, amit az alábbi **virsh install** paranccsal futtatok.
 ```
 cd /data/vm/preseed
 python3 -m http.server 8000
@@ -81,7 +81,7 @@ virt-install \
 > [!note]
 > A **preseed** konfigurációban a következő dolgokat állítottam be:
 > - **Statikus IP cím** (*192.168.1.21*) a virtuális szervernek
-> - az **/opt** és **/tmp** könyvtárak részére külön partíció
+> - az `/opt` és `/tmp` könyvtárak részére külön partíció
 > - az **SSH** az alapértelmezett (*22*) **port** helyett a *2222* porton hallgatózik
 > - **Ansible** telepítve
 > - a **root** felhasználó jelszavas SSH bejelentkezése **ideiglenesen** engedélyezve
@@ -95,6 +95,25 @@ Az installálás után **autostart**-ra jelölöm a virtuális gépet.
 virsh autostart udemx-debian
 ```
 
+## 3. Linux beállítása
+
 *A hálózatom BIND DNS szerverének A és PTR rekordjaiba felvettem a **udemx-debian.lan** host-ot, a beállításokat az alábbi fájlok tartalmazzák:*
-- [:page_facing_up: ./named/192.168.1.rev](./named/192.168.1.rev)
-- [:page_facing_up: ./named/lan.zone](./named/lan.zone)
+- [:page_facing_up: 192.168.1.rev](./named/192.168.1.rev)
+- [:page_facing_up: lan.zone](./named/lan.zone)
+
+Az **Ansible playbook**-okat a szerverre másoltam a `/opt/ansible` könyvtárba, az [:page_facing_up: inventory.ini](./ansible/inventory.ini) fájllal együtt.
+
+A szükséges **package**-eket a [:page_facing_up: packages.yml](./ansible/playbooks/packages.yml) *playbook*-ban telepítettem.
+```
+cd /opt/ansible
+ansible-playbook -i inventory.ini ./playbooks/packages.yml
+```
+
+Az **OpenJDK 8**-as verziója a *Debian 11 repository*-ban nem elérhető.
+A [:page_facing_up: java8.yml](./ansible/playbooks/java8.yml) *playbook*-ban külső forrásból letöltöttem, kicsomagoltam az `/opt/java` könyvtárba és a `java`, `javac`-t a 8-as verzióra irányítottam.
+
+```
+ansible-playbook -i inventory.ini ./playbooks/java8.yml
+```
+
+A [:page_facing_up: user.yml](./ansible/playbooks/user.yml) *playbook*-ban a **udemx** felhasználót `/opt/udemx` *home* könyvtárral létrehoztam, a **sudo** csoporthoz hozzáadtam, jelszót állítottam be hozzá.
