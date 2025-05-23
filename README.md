@@ -117,3 +117,7 @@ ansible-playbook -i inventory.ini ./playbooks/java8.yml
 ```
 
 A [:page_facing_up: user.yml](./ansible/playbooks/user.yml) *playbook*-ban a **udemx** felhasználót `/opt/udemx` *home* könyvtárral létrehoztam, a **sudo** csoporthoz hozzáadtam, jelszót állítottam be hozzá.
+
+```
+ansible-playbook -i inventory.ini ./playbooks/user.yml
+```
