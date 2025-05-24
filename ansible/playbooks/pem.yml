@@ -1,0 +1,85 @@
+- name: Generate two PEM private keys and certificates
+  hosts: local
+  gather_facts: false
+  tasks:
+
+    - name: Ensure cert directory exists
+      file:
+        path: /etc/ssl/udemx-debian
+        state: directory
+        mode: '0755'
+
+    - name: Generate SSH key pair in OpenSSH format
+      openssh_keypair:
+        path: /etc/ssl/udemx-debian/ssh
+        type: rsa
+        size: 4096
+        mode: '0600'
+
+    - name: Generate HTTPS private key
+      community.crypto.openssl_privatekey:
+        path: /etc/ssl/udemx-debian/https.key
+        size: 2048
+        type: RSA
+        mode: '0600'
+
+    - name: Generate HTTPS self-signed certificate
+      community.crypto.x509_certificate:
+        path: /etc/ssl/udemx-debian/https.crt
+        privatekey_path: /etc/ssl/udemx-debian/https.key
+        provider: selfsigned
+
+- name: Copy SSH public key and HTTPS cert to the VM
+  hosts: vm_password_auth
+  gather_facts: false
+  become: false
+  vars:
+    local_cert_dir: /etc/ssl/udemx-debian
+    remote_cert_dir: /etc/ssl/udemx-debian
+
+  tasks:
+    - name: Ensure remote root SSH directory exists
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: '0700'
+        owner: root
+        group: root
+
+    - name: Ensure remote cert directory exists
+      file:
+        path: "{{ remote_cert_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy SSH public key
+      copy:
+        src: "{{ local_cert_dir }}/ssh.pub"
+        dest: "/root/.ssh/authorized_keys"
+        mode: '600'
+
+    - name: Copy HTTPS private key
+      copy:
+        src: "{{ local_cert_dir }}/https.key"
+        dest: "{{ remote_cert_dir }}/https.key"
+        mode: '0600'
+
+    - name: Copy HTTPS cert
+      copy:
+        src: "{{ local_cert_dir }}/https.crt"
+        dest: "{{ remote_cert_dir }}/https.crt"
+        mode: '0644'
+
+    - name: Ensure SSH server allows public key authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PubkeyAuthentication'
+        line: 'PubkeyAuthentication yes'
+        state: present
+        create: yes
+        backrefs: yes
+
+    - name: Restart SSH service
+      service:
+        name: ssh
+        state: restarted

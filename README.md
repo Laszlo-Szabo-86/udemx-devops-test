@@ -33,9 +33,11 @@ virsh pool-start debian
 virsh pool-autostart debian
 ```
 
-:vertical_traffic_light: **Verziókövetéshez**, egy másik alhálózatba kapcsolt mini PC-n futó **GitLab**-on, létrehoztam egy külön csoportot (*udemx*) és projektet (*devops-test*), ami SSH-alapú **repository mirroring** segítségével minden *push* esetén továbbítja a tartalmat a jelen **GitHub** *repository*-ba (*udemx-devops-test*).
+#### :vertical_traffic_light: Verziókövetés
+Egy másik, alhálózatba kapcsolt mini PC-n futó **GitLab**-on, létrehoztam egy külön csoportot (*udemx*) és projektet (*devops-test*), ami SSH-alapú **repository mirroring** segítségével minden *push* esetén továbbítja a tartalmat a jelen **GitHub** *repository*-ba (*udemx-devops-test*).
 
-:electric_plug: A **hálózati konfigurációban** azt szeretném elérni, hogy a virtuális gép közvetlenül csatlakozzon a *192.168.1.0/24* **alhálózatomhoz**, azaz:
+#### :electric_plug: Hálózati konfiguráció
+Azt szeretném elérni, hogy a virtuális gép közvetlenül csatlakozzon a *192.168.1.0/24* **alhálózatomhoz**, azaz:
 - a fizikai gép IP címe **192.168.1.20**,
 - a virtuális gépé **192.168.1.21** legyen.
 
@@ -84,7 +86,7 @@ virt-install \
 > - az `/opt` és `/tmp` könyvtárak részére külön partíció
 > - az **SSH** az alapértelmezett (*22*) **port** helyett a *2222* porton hallgatózik
 > - **Ansible** telepítve
-> - a **root** felhasználó jelszavas SSH bejelentkezése **ideiglenesen** engedélyezve
+> - a **root** felhasználó jelszavas SSH bejelentkezése engedélyezve
 >
 > Hasznos linkek a konfigurációhoz:
 > - [example preseed](https://www.debian.org/releases/bullseye/example-preseed.txt)
@@ -101,11 +103,27 @@ virsh autostart udemx-debian
 - [:page_facing_up: 192.168.1.rev](./named/192.168.1.rev)
 - [:page_facing_up: lan.zone](./named/lan.zone)
 
-Az **Ansible playbook**-okat a szerverre másoltam a `/opt/ansible` könyvtárba, az [:page_facing_up: inventory.ini](./ansible/inventory.ini) fájllal együtt.
+Az **Ansible playbook**-okat a fizikai szerverre másoltam a `/opt/ansible` könyvtárba, az [:page_facing_up: inventory.ini](./ansible/inventory.ini) fájllal együtt.
+Az *Ansible* **control node** a host gépem, a **managed node** pedig a virtuális gép.
+A továbbiakban a *playbook*-okat mindig a *control node*-on futtatom, és azok a **hosts** paraméterükben meghatározott *node*-on hajtódnak végre.
+
+#### :lock: SSH azonosítás beállítása
+
+A virtuális szervert felveszem az ismert *host*-ok listájára. (*Az **sshpass**-nak a fizikai szerveren rendelkezésre kell állnia.*)
+```
+ssh-keyscan -p 2222 192.168.1.21 >> ~/.ssh/known_hosts
+```
+
+A [:page_facing_up: pem.yml](./ansible/playbooks/pem.yml) *playbook*-ban a **privát kulcsokat**, **SSH publikus kulcsot** és a **HTTPS tanúsítványt** létrehoztam, a publikus kulcsot és a HTTPS kulcs-tanúsítvány párt a virtuális gépre másoltam és engedélyeztem a publikus kulccsal történő azonosítást.
+```
+cd /opt/ansible
+ansible-playbook -i inventory.ini ./playbooks/pem.yml
+```
+
+#### :package: Egyéb szolgáltatások
 
 A szükséges **package**-eket a [:page_facing_up: packages.yml](./ansible/playbooks/packages.yml) *playbook*-ban telepítettem.
 ```
-cd /opt/ansible
 ansible-playbook -i inventory.ini ./playbooks/packages.yml
 ```
 

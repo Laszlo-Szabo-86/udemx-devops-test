@@ -1,5 +1,5 @@
 - name: Install OpenJDK 8 manually alongside OpenJDK 11
-  hosts: all
+  hosts: vm
   become: true
   vars:
     java8_install_dir: /opt/java
