@@ -60,6 +60,7 @@ nmcli con delete enp0s31f6
 
 A telepítés első lépésében elkészítettem a **preseed** konfigurációt a **netboot install**-hoz.
 A [:page_facing_up: preseed.cfg](./vm/preseed.cfg) fájlt elérhetővé teszem a *8000*-es porton a *netboot install* számára, amit az alábbi **virsh install** paranccsal futtatok.
+(*A `virt install` parancsban csatolom hozzá a virtuális gépet a korábban létrehozott **br0** bridge-hez.*)
 ```
 cd /data/vm/preseed
 python3 -m http.server 8000
@@ -129,13 +130,16 @@ ansible-playbook -i inventory.ini ./playbooks/packages.yml
 
 Az **OpenJDK 8**-as verziója a *Debian 11 repository*-ban nem elérhető.
 A [:page_facing_up: java8.yml](./ansible/playbooks/java8.yml) *playbook*-ban külső forrásból letöltöttem, kicsomagoltam az `/opt/java` könyvtárba és a `java`, `javac`-t a 8-as verzióra irányítottam.
-
 ```
 ansible-playbook -i inventory.ini ./playbooks/java8.yml
 ```
 
 A [:page_facing_up: user.yml](./ansible/playbooks/user.yml) *playbook*-ban a **udemx** felhasználót `/opt/udemx` *home* könyvtárral létrehoztam, a **sudo** csoporthoz hozzáadtam, jelszót állítottam be hozzá.
-
 ```
 ansible-playbook -i inventory.ini ./playbooks/user.yml
+```
+
+A [:page_facing_up: fail2ban.yml](./ansible/playbooks/fail2ban.yml) *playbook*-ban létrehoztam kettő *nginx* és egy *ssh* **jail**-t, majd a szolgáltatást egyelőre leállítottam, mert az *nginx* szerver elindulásáig hiányoznak még az *nginx* logfájlok, ezek nélkül a **fail2ban** sem indítható el.
+```
+ansible-playbook -i inventory.ini ./playbooks/fail2ban.yml
 ```

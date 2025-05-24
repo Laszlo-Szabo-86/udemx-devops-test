@@ -1,0 +1,49 @@
+- name: Setup Fail2ban custom jails
+  hosts: vm
+  become: true
+
+  tasks:
+    - name: Create fail2ban jail.local
+      copy:
+        dest: /etc/fail2ban/jail.local
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [DEFAULT]
+          # Disable all jails by default
+          enabled = false
+
+          # Set sane defaults
+          bantime  = 1h
+          findtime = 10m
+          maxretry = 5
+          backend = auto
+
+          # Ignore localhost
+          ignoreip = 127.0.0.1/8 ::1
+
+          # Custom SSH jail
+          [sshd]
+          enabled = true
+          port    = 2222
+          logpath = /var/log/auth.log
+
+          # Custom Nginx jail: botsearch
+          [nginx-botsearch]
+          enabled = true
+          port = http,https
+          logpath = /srv/nginx/logs/access.log
+          maxretry = 2
+
+          # Custom Nginx jail: http-auth
+          [nginx-http-auth]
+          enabled = true
+          port = http,https
+          logpath = /srv/nginx/logs/error.log
+          maxretry = 3
+
+    - name: Stop fail2ban
+      systemd:
+        name: fail2ban
+        state: stopped

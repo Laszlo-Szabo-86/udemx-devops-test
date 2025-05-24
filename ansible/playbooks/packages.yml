@@ -20,16 +20,16 @@
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: Set lists of packages (before installation)
+    - name: Set lists of packages
       ansible.builtin.set_fact:
         installed_packages: "{{ packages | select('in', ansible_facts.packages.keys()) | list }}"
         not_installed_packages: "{{ packages | reject('in', ansible_facts.packages.keys()) | list }}"
 
-    - name: Show installed packages (before installation)
+    - name: Show installed packages
       ansible.builtin.debug:
         var: installed_packages
 
-    - name: Show not installed packages (before installation)
+    - name: Show not installed packages
       ansible.builtin.debug:
         var: not_installed_packages
 

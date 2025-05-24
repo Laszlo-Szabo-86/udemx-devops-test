@@ -1,4 +1,4 @@
-- name: Generate two PEM private keys and certificates
+- name: Generate SSH keypair and HTTPS key-cert
   hosts: local
   gather_facts: false
   tasks:
