@@ -178,7 +178,7 @@ ansible-playbook -i inventory.ini ./playbooks/mariadb.yml
 
 A **Git** az operációs rendszerrel együtt települt. A [:page_facing_up: git.yml](./ansible/playbooks/git.yml) *playbook*-ban globálisan az alapértelmezett felhasználót **udemx**-re, az e-mail címet **udemx@udemx.eu**-ra állítottam. Egy *SSH* kulcspárt generáltam, és az `/opt/udemx/.ssh/config` fájlban beállítottam a szükséges konfigurációt.
 [:link: udemx-project](https://github.com/Laszlo-Szabo-86/udemx-project/) néven publikus **GitHub** *repository*-t hoztam létre. (*A feladatban privát repository van, azért állítottam publikusra, hogy meg tudjátok nézni.*)
-Ezt a *repository*-t fogom használni a [:arrow_down: 6. fejezetben](#ci-cd-feladat).
+Ezt a *repository*-t fogom használni a [:arrow_down: 6. fejezetben](#6-ci-cd-feladat).
 ```
 ansible-playbook -i inventory.ini ./playbooks/git.yml
 ```
@@ -204,7 +204,7 @@ ansible-playbook -i inventory.ini ./playbooks/scripts.yml
 - [:page_facing_up: mysqldump.sh](./bash/mysqldump.sh)
 - [:page_facing_up: nginx-title.sh](./bash/nginx-title.sh)
 
-**Docker projekt** feladatként a [:arrow_up: 4. fejezetben](#kiegeszito-szolgaltatasok-telepitese) telepített szolgáltatásokat szeretném a figyelmetekbe ajánlani! **Proxy webszerver**, **adatbázis** is települt. Az adatbázist a kért *stack*-ben ugyan nem használja alkalmazás, de amennyiben közös **docker network**-höz kapcsolódnak a konténerek, úgy a *Docker* belső névfeloldása alapján könnyen megtalálják egymást. Ahogy azt például az *nginx* konfigurációban láthatjátok; így nagyon egyszerű az alkalmazá és adatbázis konténerek összekapcsolása.
+**Docker projekt** feladatként a [:arrow_up: 4. fejezetben](#4-kiegészítő-szolgáltatások-telepítése) telepített szolgáltatásokat szeretném a figyelmetekbe ajánlani! **Proxy webszerver**, **adatbázis** is települt. Az adatbázist a kért *stack*-ben ugyan nem használja alkalmazás, de amennyiben közös **docker network**-höz kapcsolódnak a konténerek, úgy a *Docker* belső névfeloldása alapján könnyen megtalálják egymást. Ahogy azt például az *nginx* konfigurációban láthatjátok; így nagyon egyszerű az alkalmazá és adatbázis konténerek összekapcsolása.
 - [:page_facing_up: compose.yml](./docker/compose.yml)
 - [:page_facing_up: default.conf](./nginx/default.conf) (*nginx*)
 
