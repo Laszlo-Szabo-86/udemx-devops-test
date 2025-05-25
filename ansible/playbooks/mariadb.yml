@@ -1,0 +1,59 @@
+- name: MariaDB database and user creation
+  hosts: vm
+
+  tasks:
+    - name: Ensure PyMySQL is installed
+      ansible.builtin.pip:
+        name: PyMySQL
+        executable: pip3
+
+    - name: Create new database 'udemx-db'
+      community.mysql.mysql_db:
+        name: "udemx-db"
+        state: present
+        login_user: root
+        login_password: Alma1234
+      register: db_create_result
+
+    - name: Create user 'udemx'
+      community.mysql.mysql_user:
+        state: present
+        name: udemx
+        password: Alma1234
+        priv:
+          'udemx-db.*': 'ALL,GRANT'
+        login_user: root
+        login_password: Alma1234
+
+    - name: Check if database exists
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: Alma1234
+        query: "SHOW DATABASES LIKE 'udemx-db';"
+      register: db_check
+
+    - name: Check if user exists
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: Alma1234
+        query: "SELECT user, host FROM mysql.user WHERE user = 'udemx';"
+      register: user_check
+
+    - name: Check user privileges
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: Alma1234
+        query: "SHOW GRANTS FOR 'udemx'@'localhost';"
+      register: grants_check
+
+    - name: Show database check
+      debug:
+        var: db_check
+
+    - name: Show user check
+      debug:
+        var: user_check
+
+    - name: Show grants check
+      debug:
+        var: grants_check
