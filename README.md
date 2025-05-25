@@ -177,5 +177,8 @@ ansible-playbook -i inventory.ini ./playbooks/mariadb.yml
 ```
 
 A **Git** az operációs rendszerrel együtt települt. A [:page_facing_up: git.yml](./ansible/playbooks/git.yml) *playbook*-ban globálisan az alapértelmezett felhasználót **udemx**-re, az e-mail címet **udemx@udemx.eu**-ra állítottam. Egy *SSH* kulcspárt generáltam, és az `/opt/udemx/.ssh/config` fájlban beállítottam a szükséges konfigurációt. [:link: udemx-project](https://github.com/Laszlo-Szabo-86/udemx-project/) néven publikus **GitHub** *repository*-t hoztam létre. (*A feladatban privát repository van, azért állítottam publikusra, hogy meg tudjátok nézni.*)
+```
+ansible-playbook -i inventory.ini ./playbooks/git.yml
+```
 A *GitHub*-on a **Settings** :arrow_right: **Deploy keys** :arrow_right: **Add deploy key** menüben hozzáadtam az előbb készített publikus kulcsot. (:heavy_check_mark: *Allow write access* opció engedélyezve.)
 A `git clone github-udemx-project:Laszlo-Szabo-86/udemx-project.git` paranccsal kipróbálható, hogy a kapcsolódás sikeres.
