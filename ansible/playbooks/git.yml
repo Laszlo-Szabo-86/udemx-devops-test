@@ -1,0 +1,90 @@
+- name: Git config and SSH setup
+  hosts: vm
+
+  tasks:
+    - name: Set default user.name to 'udemx'
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "udemx"
+
+    - name: Set default user.email to 'udemx@udemx.eu'
+      community.general.git_config:
+        name: user.email
+        scope: global
+        value: "udemx@udemx.eu"
+
+    - name: Query user.name
+      community.general.git_config_info:
+        name: user.name
+        scope: global
+      register: user_name
+
+    - name: Query user.email
+      community.general.git_config_info:
+        name: user.email
+        scope: global
+      register: user_email
+
+    - name: Print query results
+      ansible.builtin.debug:
+        msg:
+          - "{{ user_name }}"
+          - "{{ user_email }}"
+
+    - name: Ensure /opt/udemx exists
+      file:
+        path: /opt/udemx
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure .ssh directory exists for deploy key
+      file:
+        path: /opt/udemx/.ssh
+        state: directory
+        mode: '0700'
+        owner: root
+        group: root
+        recurse: yes
+
+    - name: Generate deploy keypair
+      openssh_keypair:
+        path: /opt/udemx/.ssh/udemx-project
+        type: ed25519
+        owner: root
+        group: root
+        mode: '0600'
+        force: false
+
+    - name: Add SSH config for deploy key
+      blockinfile:
+        path: /opt/udemx/.ssh/config
+        create: true
+        owner: root
+        group: root
+        mode: '0600'
+        block: |
+          Host github-udemx-project
+              HostName github.com
+              User git
+              IdentityFile /opt/udemx/.ssh/udemx-project
+              IdentitiesOnly yes
+
+    - name: Fix ownership of everything under /opt/udemx
+      file:
+        path: /opt/udemx
+        owner: udemx
+        group: udemx
+        recurse: true
+
+    - name: Show deploy key
+      shell: cat /opt/udemx/.ssh/udemx-project.pub
+      become: true
+      become_user: udemx
+      register: deploy_pubkey
+
+    - name: Display the deploy key
+      debug:
+        msg: "{{ deploy_pubkey.stdout }}"
