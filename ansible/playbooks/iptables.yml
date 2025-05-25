@@ -1,0 +1,33 @@
+- name: Modify iptables rules
+  hosts: vm
+
+  tasks:
+    - name: Allow specific TCP ports and secure INPUT chain
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_ports:
+          - "80"
+          - "443"
+          - "2222"
+          - "3306"
+          - "5000"
+        ctstate: NEW
+        jump: ACCEPT
+
+    - name: Allow loopback interface
+      ansible.builtin.iptables:
+        chain: INPUT
+        in_interface: lo
+        jump: ACCEPT
+
+    - name: Allow established and related connections
+      ansible.builtin.iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+
+    - name: Set default INPUT policy to DROP
+      ansible.builtin.iptables:
+        chain: INPUT
+        policy: DROP

@@ -180,5 +180,14 @@ A **Git** az operációs rendszerrel együtt települt. A [:page_facing_up: git.
 ```
 ansible-playbook -i inventory.ini ./playbooks/git.yml
 ```
-A *GitHub*-on a **Settings** :arrow_right: **Deploy keys** :arrow_right: **Add deploy key** menüben hozzáadtam az előbb készített publikus kulcsot. (:heavy_check_mark: *Allow write access* opció engedélyezve.)
-A `git clone github-udemx-project:Laszlo-Szabo-86/udemx-project.git` paranccsal kipróbálható, hogy a kapcsolódás sikeres.
+A *GitHub*-on a **Settings** :arrow_right: **Deploy keys** :arrow_right: **Add deploy key** menüben hozzáadtam az előbb készített publikus kulcsot. (*Allow write access* opció engedélyezve.)
+A `git clone github-udemx-project:Laszlo-Szabo-86/udemx-project.git` paranccsal ellenőrizhető, hogy a kapcsolódás sikeres.
+
+---
+
+## 5. Nehezebb feladatok plusz pontokért
+Az [:page_facing_up: iptables.yml](./ansible/playbooks/iptables.yml) *playbook*-ban beállítottam, hogy az **INPUT chain** alapértelmezett *policy*-ja a **DROP** legyen, csak a `80`, `443`, `2222`, `3306` és `5000`-es portokon fogad forgalmat a szerver.
+```
+ansible-playbook -i inventory.ini ./playbooks/iptables.yml
+```
+A szerveren a beállítás az `iptables -L INPUT -n -v` paranccsal ellenőrizhető.
