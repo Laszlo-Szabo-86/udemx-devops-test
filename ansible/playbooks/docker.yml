@@ -1,0 +1,59 @@
+- name: Install Docker with custom data root
+  hosts: vm
+  become: true
+  vars:
+    docker_data_root: /srv/docker
+
+  tasks:
+    - name: Ensure required apt packages are present
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: true
+
+    - name: Add Docker GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add Docker APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: latest
+        update_cache: true
+
+    - name: Ensure Docker data root directory exists
+      file:
+        path: "{{ docker_data_root }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Configure Docker daemon to use custom data-root
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "data-root": "{{ docker_data_root }}"
+          }
+        mode: '0644'
+
+    - name: Enable and restart Docker
+      systemd:
+        name: docker
+        enabled: true
+        state: restarted

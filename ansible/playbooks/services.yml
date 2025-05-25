@@ -1,0 +1,57 @@
+- name: Deploy udemx services with Docker Compose
+  hosts: vm
+  become: true
+
+  tasks:
+
+    - name: Ensure destination directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "/srv/docker/registry"
+        - "/srv/jenkins"
+        - "/srv/mariadb"
+        - "/srv/nginx"
+        - "/srv/udemx"
+
+    - name: Ensure /srv/jenkins is owned by UID 1000
+      ansible.builtin.command: chown -R 1000:1000 /srv/jenkins
+
+    - name: Copy compose.yml to target host
+      copy:
+        src: /opt/ansible/services/compose.yml
+        dest: /srv/udemx/compose.yml
+        mode: '0644'
+
+    - name: Copy nginx configuration
+      copy:
+        src: /opt/ansible/services/default.conf
+        dest: /srv/nginx/default.conf
+        mode: '0644'
+
+    - name: Ensure Docker network exists
+      command: docker network inspect udemx-network
+      register: net_check
+      failed_when: false
+      changed_when: false
+
+    - name: Create Docker network if not present
+      command: docker network create udemx-network
+      when: net_check.rc != 0
+
+    - name: Validate Docker Compose file
+      command: docker compose -f compose.yml config
+      args:
+        chdir: /srv/udemx
+
+    - name: Start services using Docker Compose CLI
+      command: docker compose -f compose.yml up -d
+      args:
+        chdir: /srv/udemx
+    
+    - name: Star fail2ban
+      systemd:
+        name: fail2ban
+        state: started

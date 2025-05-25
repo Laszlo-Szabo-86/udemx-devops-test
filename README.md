@@ -56,6 +56,7 @@ nmcli con up bridge-slave-enp0s31f6 && nmcli con up br0 && nmcli con down enp0s3
 nmcli con delete enp0s31f6
 ```
 ---
+
 ## 2. Virtuális gép installálása
 
 A telepítés első lépésében elkészítettem a **preseed** konfigurációt a **netboot install**-hoz.
@@ -97,6 +98,8 @@ Az installálás után **autostart**-ra jelölöm a virtuális gépet.
 ```
 virsh autostart udemx-debian
 ```
+
+---
 
 ## 3. Linux beállítása
 
@@ -142,4 +145,12 @@ ansible-playbook -i inventory.ini ./playbooks/user.yml
 A [:page_facing_up: fail2ban.yml](./ansible/playbooks/fail2ban.yml) *playbook*-ban létrehoztam kettő *nginx* és egy *ssh* **jail**-t, majd a szolgáltatást egyelőre leállítottam, mert az *nginx* szerver elindulásáig hiányoznak még az *nginx* logfájlok, ezek nélkül a **fail2ban** sem indítható el.
 ```
 ansible-playbook -i inventory.ini ./playbooks/fail2ban.yml
+```
+
+---
+
+## 4. Kiegészítő szolgáltatások telepítése
+A [:page_facing_up: docker.yml](./ansible/playbooks/docker.yml) *playbook*-ban telepítettem a **Docker Engine**-t, **Docker Compose**-t és **Docker Buildx**-et egyedi **data root**-ot meghatározva az `/srv/docker` könyvtárban.
+```
+ansible-playbook -i inventory.ini ./playbooks/docker.yml
 ```
