@@ -151,6 +151,21 @@ ansible-playbook -i inventory.ini ./playbooks/fail2ban.yml
 
 ## 4. Kiegészítő szolgáltatások telepítése
 A [:page_facing_up: docker.yml](./ansible/playbooks/docker.yml) *playbook*-ban telepítettem a **Docker Engine**-t, **Docker Compose**-t és **Docker Buildx**-et egyedi **data root**-ot meghatározva az `/srv/docker` könyvtárban.
+Illetve a következő lépésben installált **Docker Registry** URL-jét hozzáadtam az *insecure-registries* kulcshoz a `daemon.json` fájlban.
 ```
 ansible-playbook -i inventory.ini ./playbooks/docker.yml
 ```
+
+A [:page_facing_up: services.yml](./ansible/playbooks/services.yml) *playbook*-ban kialakítottam a környezetet a `docker compose` futtatásához. A szükséges könyvtárakat a perzisztens tárhelyekhez (*MariaDB, Jenkins, Docker Registry, nginx*) létrehoztam, a [:page_facing_up: compose.yml](./docker/compose.yml) és a [:page_facing_up: default.conf](./nginx/default.conf) (*nginx*) fájlokat átmásoltam. A szervizeket a `docker compose up` paranccsal elindítottam, majd az *nginx* logfájlokra váró *fail2ban* szervizt is aktiváltam.
+```
+ansible-playbook -i inventory.ini playbooks/services.yml
+```
+Az alábbi konténerek indultak el a virtuális gépen:
+(az **nginx proxy** a főoldalon - [https://udemx-debian.lan](https://udemx-debian.lan) - *"Hello Udemx!"* szöveggel válaszol, a UI felületeket a táblázatban lévő *domain*-eken szolgáltatja. A **docker-registry** és a **mariadb** konténerek *default* portjai a *host* gép felé nyitva vannak.)
+
+| Konténer neve      | URL                       |
+| ---                | ---                       |
+| docker-registry    | udemx-debian.lan:5000     |
+| docker-registry-ui | registry.udemx-debian.lan |
+| jenkins            | jenkins.udemx-debian.lan  |
+| mariadb            | udemx-debian.lan:3306     |

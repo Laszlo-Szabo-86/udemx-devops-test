@@ -49,6 +49,7 @@
         content: |
           {
             "data-root": "{{ docker_data_root }}"
+            "insecure-registries": ["udemx-debian.lan:5000"]
           }
         mode: '0644'
 
