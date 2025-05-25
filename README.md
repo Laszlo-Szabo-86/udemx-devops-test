@@ -191,3 +191,13 @@ Az [:page_facing_up: iptables.yml](./ansible/playbooks/iptables.yml) *playbook*-
 ansible-playbook -i inventory.ini ./playbooks/iptables.yml
 ```
 A szerveren a beállítás az `iptables -L INPUT -n -v` paranccsal ellenőrizhető.
+
+A [:page_facing_up: scripts.yml](./ansible/playbooks/scripts.yml) *playbook*-ban a kért öt darab szkriptet a virtuális gépre másoltam, futtathatóvá tettem őket, a **mysqldump** szkript esetében a **cron** időzítést beállítottam.
+```
+ansible-playbook -i inventory.ini ./playbooks/scripts.yml
+```
+- [:page_facing_up: last-changed-logs.sh](./bash/last-changed-logs.sh)
+- [:page_facing_up: last-five.sh](./bash/last-five.sh)
+- [:page_facing_up: loadavg-15.sh](./bash/loadavg-15.sh)
+- [:page_facing_up: mysqldump.sh](./bash/mysqldump.sh)
+- [:page_facing_up: nginx-title.sh](./bash/nginx-title.sh)

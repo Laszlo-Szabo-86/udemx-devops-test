@@ -10,6 +10,7 @@
       - htop
       - openjdk-11-jdk
       - fail2ban
+      - mariadb-client
 
   tasks:
     - name: Run apt-get update

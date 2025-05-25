@@ -1,0 +1,76 @@
+- name: Setup scripts
+  hosts: vm
+
+  tasks:
+    - name: Ensure destination directory exists
+      file:
+        path: "/opt/udemx/scripts"
+        state: directory
+        mode: '0755'
+
+    - name: Copy the mysqldump script to the target
+      copy:
+        src: "/opt/ansible/scripts/mysqldump.sh"
+        dest: "/opt/udemx/scripts/mysqldump.sh"
+        mode: '0755'
+
+    - name: Copy the last-changed-logs script to the target
+      copy:
+        src: "/opt/ansible/scripts/last-changed-logs.sh"
+        dest: "/opt/udemx/scripts/last-changed-logs.sh"
+        mode: '0755'
+    
+    - name: Copy the last-five script to the target
+      copy:
+        src: "/opt/ansible/scripts/last-five.sh"
+        dest: "/opt/udemx/scripts/last-five.sh"
+        mode: '0755'
+
+    - name: Copy the loadavg-15 script to the target
+      copy:
+        src: "/opt/ansible/scripts/loadavg-15.sh"
+        dest: "/opt/udemx/scripts/loadavg-15.sh"
+        mode: '0755'
+
+    - name: Copy the nginx-title script to the target
+      copy:
+        src: "/opt/ansible/scripts/nginx-title.sh"
+        dest: "/opt/udemx/scripts/nginx-title.sh"
+        mode: '0755'
+
+# ---------------------------------------------------------------------------- #
+
+    - name: Ensure the script mysqldump is executable
+      file:
+        path: "/opt/udemx/scripts/mysqldump.sh"
+        mode: '0755'
+
+    - name: Ensure the script last-changed-logs is executable
+      file:
+        path: "/opt/udemx/scripts/last-changed-logs.sh"
+        mode: '0755'
+
+    - name: Ensure the script last-five is executable
+      file:
+        path: "/opt/udemx/scripts/last-five.sh"
+        mode: '0755'
+
+    - name: Ensure the script loadavg-15 is executable
+      file:
+        path: "/opt/udemx/scripts/loadavg-15.sh"
+        mode: '0755'
+
+    - name: Ensure the script nginx-title is executable
+      file:
+        path: "/opt/udemx/scripts/nginx-title.sh"
+        mode: '0755'
+
+# ---------------------------------------------------------------------------- #
+
+    - name: Set up the cron job for mysqldump
+      cron:
+        name: "Daily MySQL backup at 2:00 AM"
+        minute: "0"
+        hour: "2"
+        job: "/opt/udemx/scripts/mysqldump.sh"
+        user: root
