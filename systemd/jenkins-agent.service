@@ -1,0 +1,22 @@
+[Unit]
+Description=Jenkins Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/srv/jenkins/agent
+ExecStart=/usr/bin/java -jar /srv/jenkins/agent/agent.jar \
+  -url http://localhost:8080/ \
+  -secret a047c570d65e2a9d7f4c4769206d35bd17e786e76e8b34bfc571c7c9d416d820 \
+  -name agent \
+  -webSocket \
+  -workDir /srv/jenkins/agent
+
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

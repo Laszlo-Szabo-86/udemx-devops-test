@@ -213,3 +213,40 @@ A **vim**-ből a `:q!` (*mentés és figyelmeztetés nélkül*), vagy a `:wq` (m
 ---
 
 ## 6. CI-CD feladat
+A **Jenkins**-re a [jenkins.udemix-debian.lan](https://www.jenkins.udemix-debian.lan) **UI** felületen beléptem.
+A `docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` paranccsal az *initial admin* jelszót kiírattam, majd *plugin*-ek és az admin felhasználó beállítása után sikeres a *Jenkins* **első konfigurációja**.
+
+A [**Manage Jenkins**](https://jenkins.udemx-debian.lan/manage/) :arrow_right: [**Nodes**](https://jenkins.udemx-debian.lan/manage/computer/) :arrow_right: [**New Node**](https://jenkins.udemx-debian.lan/manage/computer/new) menü alatt logikailag létrehoztam az új *node*-ot **agent** néven.
+A *Permanent Agent* opció bekapcsolva, a *Remote root directory* `/srv/jenkins/agent`.
+
+A **Nodes** menüben az [*agent*-et kiválasztva](https://jenkins.udemx-debian.lan/computer/agent/) látjuk a parancsokat, amiket a virtuális gépen futtatva fizikailag is elindítottam az *agent*-et.
+```
+mkdir -p /srv/jenkins/agent
+cd /srv/jenkins/agent
+curl -skO https://jenkins.udemx-debian.lan/jnlpJars/agent.jar
+java -jar agent.jar \
+  -url http://localhost:8080/ \
+  -secret a047c570d65e2a9d7f4c4769206d35bd17e786e76e8b34bfc571c7c9d416d820 \
+  -name agent \
+  -webSocket \
+  -workDir "/srv/jenkins/agent"
+```
+
+Az újrafelhasználhatóság miatt (*és, hogy a rendszerrel együtt elinduljon*) **systemd service**-be szerveztem ki az *agent*-et.
+A [:page_facing_up: jenkins-agent.service](./systemd/jenkins-agent.service) **unit** fájlt létrehoztam az `/etc/systemd/system/jenkins-agent.service` elérési úttal.
+Majd frissítettem a *unit* fájlok listáját és engedélyeztem/elindítottam a szervizt:
+```
+systemctl daemon-reload
+systemctl enable --now jenkins-agent
+```
+
+Hasonló okokból **docker konténer**ként is indíthattam volna az *agent*-et:
+```
+docker run -d --name jenkins-agent \
+  --network udemx-network \
+  -e JENKINS_URL=http://localhost:8080 \
+  -e JENKINS_AGENT_NAME=agent \
+  -e JENKINS_SECRET=a047c570d65e2a9d7f4c4769206d35bd17e786e76e8b34bfc571c7c9d416d820 \
+  -e JENKINS_AGENT_WORKDIR=/home/jenkins \
+  jenkins/inbound-agent
+```
