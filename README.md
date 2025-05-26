@@ -213,6 +213,9 @@ A **vim**-ből a `:q!` (*mentés és figyelmeztetés nélkül*), vagy a `:wq` (m
 ---
 
 ## 6. CI-CD feladat
+
+#### :wrench: Jenkins beállítása
+
 A **Jenkins**-re a [jenkins.udemix-debian.lan](https://www.jenkins.udemix-debian.lan) **UI** felületen beléptem.
 A `docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` paranccsal az *initial admin* jelszót kiírattam, majd *plugin*-ek és az admin felhasználó beállítása után sikeres a *Jenkins* **első konfigurációja**.
 
@@ -250,3 +253,19 @@ docker run -d --name jenkins-agent \
   -e JENKINS_AGENT_WORKDIR=/home/jenkins \
   jenkins/inbound-agent
 ```
+
+#### :inbox_tray: Jenkins pipeline
+
+A [**Manage Jenkins**](https://jenkins.udemx-debian.lan/manage/) :arrow_right: [**Plugins**](https://jenkins.udemx-debian.lan/manage/pluginManager/) menüben installáltam a **Pipeline** *plugin*-t.
+A [**New Item**](https://jenkins.udemx-debian.lan/view/all/newJob) menüben létrehoztam az új *pipeline*-t a [:page_facing_up: Jenkinsfile](./jenkins/Jenkinsfile) fájlból, ami a következő lépésekből áll:
+
+- A korábban beállított *Git*-en keresztül klónoztam a *GitHub repository*-t.
+- *Dockerfile* segítségével felépítettem az új image-et.
+- Azt feltöltöttem a saját *Docker Registry*-be.
+- Majd a *registry*-ből letöltöttem az *image*-et, amit konténerben futattam.
+
+A böngészőben a [udemx-debian.lan:43770](http://udemx-debian.lan:43770) címen az alábbi képnek kell megjelennie:
+
+![udemx-hello](./media/udemx-hello.jpg)
+
+---

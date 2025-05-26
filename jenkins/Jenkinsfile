@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = 'localhost:5000'
+        IMAGE_NAME = "${REGISTRY}/udemx-project"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'git@github-udemx-project:Laszlo-Szabo-86/udemx-project.git', credentialsId: 'github-credentials-id'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                    mkdir -p build
+                    cp index.html styles.css build/
+                    cat > build/Dockerfile <<EOF
+                    FROM nginx:alpine
+                    COPY . /usr/share/nginx/html
+                    EOF
+                    docker build -t ${IMAGE_NAME}:latest -f build/Dockerfile build/
+                    """
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                sh "docker push ${IMAGE_NAME}:latest"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh """
+                docker pull ${IMAGE_NAME}:latest
+                docker stop static-site || true
+                docker rm static-site || true
+                docker run -d --name static-site -p 80:80 ${IMAGE_NAME}:latest
+                """
+            }
+        }
+    }
+}
