@@ -41,7 +41,7 @@ pipeline {
                 docker pull ${IMAGE_NAME}:latest
                 docker stop static-site || true
                 docker rm static-site || true
-                docker run -d --name static-site -p 80:80 ${IMAGE_NAME}:latest
+                docker run -d --name static-site -p 43770:80 ${IMAGE_NAME}:latest
                 """
             }
         }
